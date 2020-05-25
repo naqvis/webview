@@ -15,22 +15,7 @@ Webview supported platforms and the engines you can expect to render your applic
 | Windows          | MSHTML or EdgeHTML  |
 
 ## Pre-requisite
-1. Make sure you compile `ext/webview.cc` and save object file `webview.o` under respective OS folder in `ext` folder. Follow instructions for your specific OS
-
-### Mac compilation
-```
-cd ext
-c++ -c webview.cc -o darwin/webview.o -DWEBVIEW_COCOA=1 -DOBJC_OLD_DISPATCH_PROTOTYPES=1 -std=c++11
-```
-
-### Linux compilation
 If you're planning on targeting Linux you must ensure that Webkit2gtk is already installed and available for discovery via the pkg-config command.
-
-```
-cd ext
-c++ -c webview.cc -o linux/webview.o -DWEBVIEW_GTK=1 -std=c++11
-```
-
 
 ## Installation
 

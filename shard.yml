@@ -1,11 +1,14 @@
 name: webview
-version: 0.1.0
+version: 0.1.1
 
 authors:
   - Ali Naqvi <syed.alinaqvi@gmail.com>
 
 description: |
   Crystal bindings to the zserge's tiny cross-platform Webview library.
+
+scripts:
+  postinstall: make
 
 crystal: 0.34.0
 

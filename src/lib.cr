@@ -1,12 +1,10 @@
 module Webview
+  @[Link(ldflags: "-L#{__DIR__}/../ext -lwebview.o -lc++")]
   {% if flag?(:darwin) %}
-    @[Link(ldflags: "-L#{__DIR__}/../ext/darwin -lwebview.o -lc++")]
     @[Link(framework: "WebKit")]
   {% elsif flag?(:linux) %}
-    @[Link(ldflags: "-L#{__DIR__}/../ext/linux -lwebview.o -lc++")]
     @[Link(ldflags: "`command -v pkg-config > /dev/null && pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0`")]
   {% elsif flag?(:windows) %}
-    @[Link(ldflags: "-L#{__DIR__}/../ext/windows -lwebview.o -lc++")]
     # Windows requires special linker flags for GUI apps.
     @[Link(ldflags: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32 -H windowsgui")]
   {% else %}
