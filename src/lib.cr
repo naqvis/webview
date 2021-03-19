@@ -1,11 +1,13 @@
 module Webview
-  @[Link(ldflags: "-L#{__DIR__}/../ext -lwebview.o -lc++")]
   {% if flag?(:darwin) %}
     @[Link(framework: "WebKit")]
+    @[Link(ldflags: "-L#{__DIR__}/../ext -lwebview.o -lc++")]
   {% elsif flag?(:linux) %}
+    @[Link(ldflags: "#{__DIR__}/../ext/libwebview.a -lstdc++")]
     @[Link(ldflags: "`command -v pkg-config > /dev/null && pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0`")]
   {% elsif flag?(:windows) %}
     # Windows requires special linker flags for GUI apps.
+    @[Link(ldflags: "-L#{__DIR__}/../ext -lwebview.o -lc++")]
     @[Link(ldflags: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32 -H windowsgui")]
   {% else %}
     raise "Platform not supported"
