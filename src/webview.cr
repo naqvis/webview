@@ -87,7 +87,7 @@ module Webview
     # also the result of the expression is ignored. Use RPC bindings if you want
     # to receive notifications about the result of the evaluation.
     def eval(js : String)
-      LibWebView.init(@w, js)
+      LibWebView.eval(@w, js)
     end
 
     # binds a callback function so that it will appear under the given name
