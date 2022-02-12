@@ -124,6 +124,39 @@ wv.run
 wv.destroy
 ```
 
+### Example 4: Calling Crystal code from JavaScript and executing JavaScript from Crystal
+
+```crystal
+require "webview"
+
+html = <<-HTML
+<!DOCTYPE html><html lang="en-US">
+<head>
+<title>Hello,World!</title>
+</head>
+<body>
+  <button onClick="add(document.body.children.length)">Add</button>
+</body>
+</html>
+HTML
+
+
+inject = <<-JS
+  elem = document.createElement('div');  
+  elem.innerHTML = "hello webview %s";
+  document.body.appendChild(elem);
+JS
+
+wv = Webview.window(640, 480, Webview::SizeHints::NONE, "Hello WebView", "data:text/html,#{html}" , true)
+
+wv.bind("add", Webview::JSProc.new { |n|
+  wv.eval(sprintf(inject, n))
+  JSON::Any.new(nil)
+})
+
+wv.run
+wv.destroy
+```
 
 ## Contributing
 
