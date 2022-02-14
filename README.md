@@ -4,7 +4,7 @@ Crystal language bindings for [zserge's Webview](https://github.com/zserge/webvi
 
 **Webview** relys on default rendering engine of host Operating System, thus binaries generated with this Shard will be much more leaner as compared to [Electron](https://github.com/electron/electron) which bundles Chromium with each distribution.
 
-Shard Supports **Two-way bindings** between Crystal and JavaScript. You can invoke JS code via `Webview::Webview#eval` and calling Crystal code from JS is done via `WebView::Webview#bind` (refer to Example 3 for sample on how to invoke Crystal functions from JS)
+Shard Supports **Two-way bindings** between Crystal and JavaScript. You can invoke JS code via `Webview::Webview#eval` and calling Crystal code from JS is done via `WebView::Webview#bind` (refer to Example 3,4 for samples on how to invoke Crystal functions from JS)
 
 Webview supported platforms and the engines you can expect to render your application content are as follows:
 
