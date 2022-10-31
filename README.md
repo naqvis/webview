@@ -8,7 +8,7 @@ This shard supports **two-way bindings** between Crystal and JavaScript. You can
 
 Webview-supported platforms and the engines you can expect to render your application content are as follows:
 
-| Operating System | Browser Engine Used |,
+| Operating System | Browser Engine Used |
 | ---------------- | ------------------- |
 | macOS            | Cocoa/WebKit        |
 | Linux            | Gtk-webkit2         |
