@@ -158,6 +158,21 @@ wv.run
 wv.destroy
 ```
 
+### Example 5: Running your web app in another thread
+
+```crystal
+Thread.new do
+  get "/" do
+    "hello from kemal"
+  end
+  Kemal.run
+end
+
+wv = Webview.window(640, 480, Webview::SizeHints::NONE, "WebView with local webapp!", "http://localhost:3000")
+wv.run
+wv.destroy
+```
+
 ## Contributing
 
 1. Fork it (<https://github.com/naqvis/webview/fork>)
