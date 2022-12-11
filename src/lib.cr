@@ -45,7 +45,9 @@ module Webview
     # "data:text/text,<html>...</html>". It is often ok not to url-encode it
     # properly, webview will re-encode it for you.
     fun navigate = webview_navigate(w : T, url : LibC::Char*)
-
+    # Set webview HTML directly.
+    # Example: webview_set_html(w, "<h1>Hello</h1>");
+    fun set_html = webview_set_html(w : T, html : LibC::Char*)
     # Injects JavaScript code at the initialization of the new page. Every time
     # the webview will open a the new page - this initialization code will be
     # executed. It is guaranteed that code is executed before window.onload.
@@ -60,10 +62,35 @@ module Webview
     # string is a JSON array of all the arguments passed to the JavaScript
     # function.
     fun bind = webview_bind(w : T, name : LibC::Char*, fn : (LibC::Char*, LibC::Char*, Void* -> Void), arg : Void*)
+    # Removes a native C callback that was previously set by webview_bind.
+    fun unbind = webview_unbind(w : T, name : LibC::Char*)
     # Allows to return a value from the native binding. Original request pointer
     # must be provided to help internal RPC engine match requests with responses.
     # If status is zero - result is expected to be a valid JSON result value.
     # If status is not zero - result is an error JSON object.
     fun webview_return(w : T, seq : LibC::Char*, status : LibC::Int, result : LibC::Char*)
+    # Get the library's version information.
+    # @since 0.10
+    fun version = webview_version : WebviewVersionInfo*
+
+    # Holds the library's version information.
+    struct WebviewVersionInfo
+      # The elements of the version number.
+      version : WebviewVersion
+      # SemVer 2.0.0 version number in MAJOR.MINOR.PATCH format.
+      version_number : LibC::Char[32]
+      # SemVer 2.0.0 pre-release labels prefixed with "-" if specified, otherwise
+      # an empty string.
+      pre_release : LibC::Char[48]
+      # SemVer 2.0.0 build metadata prefixed with "+", otherwise an empty string.
+      build_metadata : LibC::Char[48]
+    end
+
+    # Holds the elements of a MAJOR.MINOR.PATCH version number.
+    struct WebviewVersion
+      major : LibC::UInt
+      minor : LibC::UInt
+      patch : LibC::UInt
+    end
   end
 end
