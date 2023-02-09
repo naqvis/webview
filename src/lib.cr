@@ -7,8 +7,7 @@ module Webview
     @[Link(ldflags: "#{__DIR__}/../ext/libwebview.a -lstdc++")]
   {% elsif flag?(:windows) %}
     # Windows requires special linker flags for GUI apps.
-    @[Link(ldflags: "-L#{__DIR__}/../ext -lwebview.o -lc++")]
-    @[Link(ldflags: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32 -H windowsgui")]
+    @[Link("webview")]
   {% else %}
     raise "Platform not supported"
   {% end %}
