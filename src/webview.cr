@@ -2,7 +2,7 @@ require "json"
 
 # Crystal bindings for [zserge's Webview](https://github.com/zserge/webview) which is an excellent cross-platform single header webview library for C/C++ using Gtk, Cocoa or MSHTML repectively.
 module Webview
-  VERSION = "0.2.1"
+  VERSION = "0.2.2"
 
   # Window size hints
   enum SizeHints
