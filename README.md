@@ -27,6 +27,14 @@ BSD-based systems:
 
 * FreeBSD packages: `pkg install webkit2-gtk3`
 * Execution on BSD-based systems may require adding the `wxallowed` option (see [mount(8)](https://man.openbsd.org/mount.8))  to your fstab to bypass [W^X](https://en.wikipedia.org/wiki/W%5EX "write xor execute") memory protection for your executable. Please see if it works without disabling this security feature first.
+
+Microsoft Windows:
+
+* You should have Visual C++ Build tools already as it's a pre-requisite for crystal compiler
+* `git clone https://github.com/webview/webview` to get WebView sources
+* `webview\script\build.bat` to compile them (it will download required nuget package)
+* copy `webview\dll\x64\webview.lib` to `<your crystal installation>\lib`
+* copy `webview\dll\x64\webview.dll` to directory with your program
   
 ## Installation
 
