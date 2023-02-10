@@ -6,9 +6,10 @@ module Webview
     @[Link(ldflags: "`command -v pkg-config > /dev/null && pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0`")]
     @[Link(ldflags: "#{__DIR__}/../ext/libwebview.a -lstdc++")]
   {% elsif flag?(:windows) %}
-    # Windows requires special linker flags for GUI apps.
     @[Link("webview")]
-  {% else %}
+    # TODO - Windows requires special linker flags for GUI apps, but this doesn't work with crystal stdlib (tried with Crystal 1.6.2).
+    # @[Link(ldflags: "/subsystem:windows")]
+    {% else %}
     raise "Platform not supported"
   {% end %}
   lib LibWebView
