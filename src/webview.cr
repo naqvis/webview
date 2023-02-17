@@ -118,7 +118,7 @@ module Webview
         cb_ctx = Box(BindContext).unbox(data)
         res = cb_ctx.cb.call(raw.as_a)
         @@bindings.delete(cb_ctx.cb)
-        LibWebView.webview_return(cb_ctx.w, id, 0, res.to_s)
+        LibWebView.webview_return(cb_ctx.w, id, 0, res.to_json)
       }, boxed)
     end
 
