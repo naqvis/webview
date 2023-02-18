@@ -9,7 +9,7 @@ module Webview
     @[Link("webview")]
     # TODO - Windows requires special linker flags for GUI apps, but this doesn't work with crystal stdlib (tried with Crystal 1.6.2).
     # @[Link(ldflags: "/subsystem:windows")]
-    {% else %}
+  {% else %}
     raise "Platform not supported"
   {% end %}
   lib LibWebView

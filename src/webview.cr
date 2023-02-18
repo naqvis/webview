@@ -2,7 +2,7 @@ require "json"
 
 # Crystal bindings for [zserge's Webview](https://github.com/zserge/webview) which is an excellent cross-platform single header webview library for C/C++ using Gtk, Cocoa or MSHTML repectively.
 module Webview
-  VERSION = "0.2.2"
+  VERSION = {{ `shards version "#{__DIR__}"`.chomp.stringify }}
 
   # Window size hints
   enum SizeHints
@@ -118,7 +118,7 @@ module Webview
         cb_ctx = Box(BindContext).unbox(data)
         res = cb_ctx.cb.call(raw.as_a)
         @@bindings.delete(cb_ctx.cb)
-        LibWebView.webview_return(cb_ctx.w, id, 0, res.to_s)
+        LibWebView.webview_return(cb_ctx.w, id, 0, res.to_json)
       }, boxed)
     end
 
@@ -128,14 +128,14 @@ module Webview
     end
   end
 
-  def self.window(width, height, hint, title, debug = false)
+  def self.window(width : Int32, height : Int32, hint : SizeHints, title : String, debug = false)
     wv = Webview.new(debug, title)
     wv.size(width, height, hint)
     wv.title = title
     wv
   end
 
-  def self.window(width, height, hint, title, url, debug = false)
+  def self.window(width : Int32, height : Int32, hint : SizeHints, title : String, url : String, debug = false)
     wv = Webview.new(debug, title)
     wv.size(width, height, hint)
     wv.title = title
