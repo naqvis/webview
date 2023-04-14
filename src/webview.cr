@@ -117,7 +117,6 @@ module Webview
         raw = JSON.parse(String.new(req))
         cb_ctx = Box(BindContext).unbox(data)
         res = cb_ctx.cb.call(raw.as_a)
-        @@bindings.delete(cb_ctx.cb)
         LibWebView.webview_return(cb_ctx.w, id, 0, res.to_json)
       }, boxed)
     end
@@ -125,6 +124,7 @@ module Webview
     # Removes a native Crystal callback that was previously set by `bind`.
     def unbind(name : String)
       LibWebView.unbind(@w, name)
+      @@bindings.delete(name)
     end
   end
 
