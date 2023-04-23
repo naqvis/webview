@@ -18,7 +18,7 @@ jobs:
         run: |
           mkdir libs\webview2
           nuget.exe install Microsoft.Web.Webview2 -Version 1.0.1150.38 -OutputDirectory libs\webview2
-          copy libs\webview2\build\native\include\*.h ext\
+          copy libs\webview2\microsoft.web.webview2.1.0.1150.38\build\native\include\*.h ext\
       - name: Install crystal land dependencies
         run: shards install
       - name: Compile library
