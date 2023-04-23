@@ -2,9 +2,9 @@ name: Linux CI
 
 on:
   push:
-    branches: [master, github_ci]
+    branches: [master]
   pull_request:
-    branches: [master, github_ci]
+    branches: [master]
   schedule:
     - cron: "0 6 * * 6"
 jobs:
