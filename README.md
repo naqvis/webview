@@ -1,3 +1,6 @@
+[![Linux CI](https://github.com/naqvis/webview/actions/workflows/linux.yml/badge.svg)](https://github.com/naqvis/webview/actions/workflows/linux.yml)
+[![MacOSX CI](https://github.com/naqvis/webview/actions/workflows/macos.yml/badge.svg)](https://github.com/naqvis/webview/actions/workflows/macos.yml)
+[![Windows CI](https://github.com/naqvis/webview/actions/workflows/windows.yml/badge.svg)](https://github.com/naqvis/webview/actions/workflows/windows.yml)
 # Crystal Webview
 
 Crystal language bindings for [zserge's Webview](https://github.com/zserge/webview) which is an excellent cross-platform single-header webview library for C/C++ using Gtk, Cocoa, or MSHTML/Edge, depending on the host OS.
