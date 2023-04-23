@@ -1,0 +1,22 @@
+name: Mac OSX CI
+
+on:
+  push:
+    branches: [master, github_ci]
+  pull_request:
+    branches: [master, github_ci]
+  schedule:
+    - cron: "0 6 * * 6"
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+      - name: Install dependencies
+        run: shards install
+      - name: Compile library
+        run: make
+      - name: Run tests
+        run: crystal spec
