@@ -22,6 +22,11 @@ jobs:
       - name: Install crystal land dependencies
         run: shards install
       - name: Compile library
-        run: make
+        shell: powershell
+        run: |
+          cd ext
+          cl /D "WEBVIEW_API=__declspec(dllexport)" /std:c++17 /EHsc webview.cc /link /DLL "/OUT:..\webview.dll"
+          cd ..
+          copy webview.lib (crystal env CRYSTAL_LIBRARY_PATH)
       - name: Run tests
         run: crystal spec
