@@ -1,7 +1,7 @@
 UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
-CFLAGS = -DWEBVIEW_COCOA=1 -DOBJC_OLD_DISPATCH_PROTOTYPES=1
+CFLAGS = -DWEBVIEW_COCOA=1 -DWEBVIEW_BUILD_SHARED=1 -DOBJC_OLD_DISPATCH_PROTOTYPES=1
 endif
 
 ifeq ($(UNAME), Linux)
@@ -24,4 +24,4 @@ endif
 
 .PHONY: clean
 clean:
-			rm -f $(obj_file)
+	rm -f $(obj_file)
