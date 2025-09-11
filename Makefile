@@ -5,7 +5,7 @@ CFLAGS = -DWEBVIEW_COCOA=1 -DWEBVIEW_BUILD_SHARED=1 -DOBJC_OLD_DISPATCH_PROTOTYP
 endif
 
 ifeq ($(UNAME), Linux)
-CFLAGS = -DWEBVIEW_GTK=1 -DWEBVIEW_BUILD_SHARED=1 `pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0`
+CFLAGS = -DWEBVIEW_GTK=1 -DWEBVIEW_BUILD_SHARED=1 `pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.1`
 endif
 
 CFLAGS += -std=c++11
