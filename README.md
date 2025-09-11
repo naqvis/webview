@@ -23,8 +23,8 @@ If you're planning on targeting Linux or BSD you must ensure that [WebKit2GTK][w
 Debian-based systems:
 
 * Packages:
-  * Development: `apt install libgtk-3-dev libwebkit2gtk-4.0-dev`
-  * Production: `apt install libgtk-3-0 libwebkit2gtk-4.0-37`
+  * Development: `apt install libgtk-3-dev libwebkit2gtk-4.1-dev`
+  * Production: `apt install libgtk-3-0 libwebkit2gtk-4.1-0`
 
 BSD-based systems:
 
