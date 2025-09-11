@@ -1,6 +1,6 @@
 require "json"
 
-# Crystal bindings for [zserge's Webview](https://github.com/zserge/webview) which is an excellent cross-platform single header webview library for C/C++ using Gtk, Cocoa or MSHTML repectively.
+# Crystal bindings for [zserge's Webview](https://github.com/zserge/webview) which is an excellent cross-platform single header webview library for C/C++ using Gtk, Cocoa or MSHTML respectively.
 module Webview
   VERSION = {{ `shards version "#{__DIR__}"`.chomp.stringify }}
 
