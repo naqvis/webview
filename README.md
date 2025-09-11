@@ -5,7 +5,7 @@
 
 Crystal language bindings for [zserge's Webview](https://github.com/zserge/webview) which is an excellent cross-platform single-header webview library for C/C++ using Gtk, Cocoa, or MSHTML/Edge, depending on the host OS.
 
-**Webview** relys on default rendering engine of host Operating System, thus binaries generated with this Shard will be much more leaner as compared to [Electron](https://github.com/electron/electron) which bundles Chromium with each distribution.
+**Webview** relies on default rendering engine of host Operating System, thus binaries generated with this Shard will be much more leaner as compared to [Electron](https://github.com/electron/electron) which bundles Chromium with each distribution.
 
 This shard supports **two-way bindings** between Crystal and JavaScript. You can invoke JS code via `Webview::Webview#eval` and calling Crystal code from JS is done via `WebView::Webview#bind` (refer to Examples 3 & 4 for samples on how to invoke Crystal functions from JS).
 
