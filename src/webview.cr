@@ -22,6 +22,15 @@ module Webview
     end
   end
 
+  # Exception class for webview errors
+  class Error < Exception
+    getter error_code : LibWebView::Error
+
+    def initialize(@error_code : LibWebView::Error, message : String? = nil)
+      super(message || error_code.to_s)
+    end
+  end
+
   alias JSProc = Array(JSON::Any) -> JSON::Any
 
   class Webview
@@ -32,24 +41,29 @@ module Webview
 
     def initialize(debug, title)
       @w = LibWebView.create(debug ? 1 : 0, nil)
-      LibWebView.set_title(@w, title)
+      check_error(LibWebView.set_title(@w, title))
+    end
+
+    # Helper method to check error codes and raise exceptions if needed
+    private def check_error(result : LibWebView::Error)
+      raise Error.new(result) unless result.ok?
     end
 
     # destroys a WebView and closes the native window.
     def destroy
-      LibWebView.destroy(@w)
+      check_error(LibWebView.destroy(@w))
     end
 
     # Terminate stops the main loop. It is safe to call this function from
     # a background thread.
     def terminate
-      LibWebView.terminate(@w)
+      check_error(LibWebView.terminate(@w))
     end
 
     # runs the main loop until it's terminated. After this function exists
     # you must destroy the WebView
     def run
-      LibWebView.run(@w)
+      check_error(LibWebView.run(@w))
     end
 
     # returns a native window handle pointer. When using GTK backend the
@@ -60,23 +74,23 @@ module Webview
     end
 
     def title=(val)
-      LibWebView.set_title(@w, val)
+      check_error(LibWebView.set_title(@w, val))
     end
 
     def size(width, height, hint : SizeHints)
-      LibWebView.set_size(@w, width, height, hint.value)
+      check_error(LibWebView.set_size(@w, width, height, hint))
     end
 
     # navigates WebView to the given URL. URL may be a data URI, i.e.
     # "data:text/text,<html>..</html>". It is often ok not to url-encode it
     # properlty, WebView will re-encode it for you.
     def navigate(url)
-      LibWebView.navigate(@w, url)
+      check_error(LibWebView.navigate(@w, url))
     end
 
     # Set WebView HTML directly
     def html=(html : String)
-      LibWebView.set_html(@w, html)
+      check_error(LibWebView.set_html(@w, html))
     end
 
     # posts a function to be executed on the main thread. You normally do no need
@@ -85,25 +99,25 @@ module Webview
       boxed = Box.box(f)
       @@dispatchs[f] = boxed
 
-      LibWebView.dispatch(@w, ->(_w, data) {
+      check_error(LibWebView.dispatch(@w, ->(_w, data) {
         cb = Box(typeof(f)).unbox(data)
         cb.call
         @@dispatchs.delete(cb)
-      }, boxed)
+      }, boxed))
     end
 
     # injects Javascript code at the initialization of the new page. Every
     # time the WebView will open the new page - this initialization code will
     # be executed. It is guaranteed that code is executed before window.onload.
     def init(js : String)
-      LibWebView.init(@w, js)
+      check_error(LibWebView.init(@w, js))
     end
 
     # evaluates arbitrary Javascript code. Evaluation happens asynchronously,
     # also the result of the expression is ignored. Use RPC bindings if you want
     # to receive notifications about the result of the evaluation.
     def eval(js : String)
-      LibWebView.eval(@w, js)
+      check_error(LibWebView.eval(@w, js))
     end
 
     # binds a callback function so that it will appear under the given name
@@ -113,17 +127,17 @@ module Webview
       boxed = Box.box(ctx)
       @@bindings[fn] = boxed
 
-      LibWebView.bind(@w, name, ->(id, req, data) {
+      check_error(LibWebView.bind(@w, name, ->(id, req, data) {
         raw = JSON.parse(String.new(req))
         cb_ctx = Box(BindContext).unbox(data)
         res = cb_ctx.cb.call(raw.as_a)
         LibWebView.webview_return(cb_ctx.w, id, 0, res.to_json)
-      }, boxed)
+      }, boxed))
     end
 
     # Removes a native Crystal callback that was previously set by `bind`.
     def unbind(name : String)
-      LibWebView.unbind(@w, name)
+      check_error(LibWebView.unbind(@w, name))
       @@bindings.delete(name)
     end
   end

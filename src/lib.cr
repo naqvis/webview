@@ -15,6 +15,18 @@ module Webview
   lib LibWebView
     alias T = Void*
 
+    # Error codes returned by webview functions
+    enum Error : LibC::Int
+      MISSING_DEPENDENCY = -5 # Missing dependency
+      CANCELED           = -4 # Operation canceled
+      INVALID_STATE      = -3 # Invalid state detected
+      INVALID_ARGUMENT   = -2 # One or more invalid arguments
+      UNSPECIFIED        = -1 # An unspecified error occurred
+      OK                 =  0 # Success
+      DUPLICATE          =  1 # Something already exists
+      NOT_FOUND          =  2 # Something does not exist
+    end
+
     # Creates a new webview instance. If debug is non-zero - developer tools will
     # be enabled (if the platform supports them). Window parameter can be a
     # pointer to the native window handle. If it's non-null - then child WebView
@@ -23,52 +35,52 @@ module Webview
     # passed here.
     fun create = webview_create(debug : LibC::Int, window : Void*) : T
     # Destroys a webview and closes the native window.
-    fun destroy = webview_destroy(w : T)
+    fun destroy = webview_destroy(w : T) : Error
     # Runs the main loop until it's terminated. After this function exits - you
     # must destroy the webview.
-    fun run = webview_run(w : T)
+    fun run = webview_run(w : T) : Error
     # Stops the main loop. It is safe to call this function from another other
     # background thread.
-    fun terminate = webview_terminate(w : T)
+    fun terminate = webview_terminate(w : T) : Error
     # Posts a function to be executed on the main thread. You normally do not need
     # to call this function, unless you want to tweak the native window.
-    fun dispatch = webview_dispatch(w : T, fn : (T, Void* -> Void), arg : Void*)
+    fun dispatch = webview_dispatch(w : T, fn : (T, Void* -> Void), arg : Void*) : Error
     # Returns a native window handle pointer. When using GTK backend the pointer
     # is GtkWindow pointer, when using Cocoa backend the pointer is NSWindow
     # pointer, when using Win32 backend the pointer is HWND pointer.
     fun get_window = webview_get_window(w : T) : Void*
     # Updates the title of the native window. Must be called from the UI thread.
-    fun set_title = webview_set_title(w : T, title : LibC::Char*)
+    fun set_title = webview_set_title(w : T, title : LibC::Char*) : Error
     # Updates native window size. See WEBVIEW_HINT constants.
-    fun set_size = webview_set_size(w : T, width : LibC::Int, height : LibC::Int, hints : LibC::Int)
+    fun set_size = webview_set_size(w : T, width : LibC::Int, height : LibC::Int, hints : LibC::Int) : Error
     # Navigates webview to the given URL. URL may be a data URI, i.e.
     # "data:text/text,<html>...</html>". It is often ok not to url-encode it
     # properly, webview will re-encode it for you.
-    fun navigate = webview_navigate(w : T, url : LibC::Char*)
+    fun navigate = webview_navigate(w : T, url : LibC::Char*) : Error
     # Set webview HTML directly.
     # Example: webview_set_html(w, "<h1>Hello</h1>");
-    fun set_html = webview_set_html(w : T, html : LibC::Char*)
+    fun set_html = webview_set_html(w : T, html : LibC::Char*) : Error
     # Injects JavaScript code at the initialization of the new page. Every time
     # the webview will open a the new page - this initialization code will be
     # executed. It is guaranteed that code is executed before window.onload.
-    fun init = webview_init(w : T, js : LibC::Char*)
+    fun init = webview_init(w : T, js : LibC::Char*) : Error
     # Evaluates arbitrary JavaScript code. Evaluation happens asynchronously, also
     # the result of the expression is ignored. Use RPC bindings if you want to
     # receive notifications about the results of the evaluation.
-    fun eval = webview_eval(w : T, js : LibC::Char*)
+    fun eval = webview_eval(w : T, js : LibC::Char*) : Error
     # Binds a native C callback so that it will appear under the given name as a
     # global JavaScript function. Internally it uses webview_init(). Callback
     # receives a request string and a user-provided argument pointer. Request
     # string is a JSON array of all the arguments passed to the JavaScript
     # function.
-    fun bind = webview_bind(w : T, name : LibC::Char*, fn : (LibC::Char*, LibC::Char*, Void* -> Void), arg : Void*)
+    fun bind = webview_bind(w : T, name : LibC::Char*, fn : (LibC::Char*, LibC::Char*, Void* -> Void), arg : Void*) : Error
     # Removes a native C callback that was previously set by webview_bind.
-    fun unbind = webview_unbind(w : T, name : LibC::Char*)
+    fun unbind = webview_unbind(w : T, name : LibC::Char*) : Error
     # Allows to return a value from the native binding. Original request pointer
     # must be provided to help internal RPC engine match requests with responses.
     # If status is zero - result is expected to be a valid JSON result value.
     # If status is not zero - result is an error JSON object.
-    fun webview_return(w : T, seq : LibC::Char*, status : LibC::Int, result : LibC::Char*)
+    fun webview_return(w : T, seq : LibC::Char*, status : LibC::Int, result : LibC::Char*) : Error
     # Get the library's version information.
     # @since 0.10
     fun version = webview_version : WebviewVersionInfo*
