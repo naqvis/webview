@@ -3,7 +3,14 @@ module Webview
     @[Link(framework: "WebKit")]
     @[Link(ldflags: "-L#{__DIR__}/../ext -lwebview.o -lc++")]
   {% elsif flag?(:linux) %}
-    @[Link(ldflags: "`command -v pkg-config > /dev/null && pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0`")]
+    @[Link(ldflags: "`command -v pkg-config > /dev/null &&
+      if pkg-config --exists webkit2gtk-4.1; then
+        pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.1;
+      elif pkg-config --exists webkit2gtk-4.0; then
+        pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0;
+      else
+        printf %s '-lgtk-3 -lwebkit2gtk-4.0';
+      fi`")]
     @[Link(ldflags: "#{__DIR__}/../ext/libwebview.a -lstdc++")]
   {% elsif flag?(:windows) %}
     @[Link("webview")]
