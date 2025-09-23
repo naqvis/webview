@@ -24,6 +24,10 @@ ifeq ($(UNAME), Linux)
 	ar rcs ext/libwebview.a ext/webview.o
 endif
 
+ifeq ($(findstring MINGW,$(UNAME)),MINGW)
+	ar rcs ext/libwebview.a ext/webview.o
+endif
+
 %.o: %.cc
 	$(CXX) -c -o $@ $(CXXFLAGS) $<
 
