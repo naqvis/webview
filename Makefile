@@ -1,18 +1,19 @@
 UNAME := $(shell uname)
 
+CXXFLAGS ?= -std=c++11
+
 ifeq ($(UNAME), Darwin)
-CFLAGS = -DWEBVIEW_COCOA=1 -DWEBVIEW_BUILD_SHARED=1 -DOBJC_OLD_DISPATCH_PROTOTYPES=1
+CXXFLAGS += -DWEBVIEW_COCOA=1 -DWEBVIEW_BUILD_SHARED=1 -DOBJC_OLD_DISPATCH_PROTOTYPES=1
 endif
 
 ifeq ($(UNAME), Linux)
-CFLAGS = -DWEBVIEW_GTK=1 -DWEBVIEW_BUILD_SHARED=1 `if pkg-config --exists webkit2gtk-4.1; then \
+CXXFLAGS += -DWEBVIEW_GTK=1 -DWEBVIEW_BUILD_SHARED=1 `if pkg-config --exists webkit2gtk-4.1; then \
 	pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.1; \
 else \
 	pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0; \
 fi`
 endif
 
-CFLAGS += -std=c++11
 cpp_file := ext/webview.cc
 obj_file := $(cpp_file:.cc=.o)
 
@@ -24,7 +25,7 @@ ifeq ($(UNAME), Linux)
 endif
 
 %.o: %.cc
-	$(CXX) -c -o $@ $(CFLAGS) $<
+	$(CXX) -c -o $@ $(CXXFLAGS) $<
 
 .PHONY: clean
 clean:
