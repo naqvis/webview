@@ -33,11 +33,26 @@ BSD-based systems:
 
 Microsoft Windows:
 
-* You should have Visual C++ Build tools already as it's a pre-requisite for crystal compiler
-* `git clone https://github.com/webview/webview` to get WebView sources
-* `webview\script\build.bat` to compile them (it will download required nuget package)
-* copy `webview\dll\x64\webview.lib` to `<your crystal installation>\lib`
-* copy `webview\dll\x64\webview.dll` to directory with your program
+* Visual C++ Build Tools (or Visual Studio with C++ development environment)
+* Download WebView2 SDK headers via NuGet and build the native DLL using MSVC's cl compiler
+
+PowerShell example (run from project root):
+```powershell
+# Get WebView2 headers and place them in ext\
+mkdir libs\webview2
+nuget.exe install Microsoft.Web.WebView2 -Version 1.0.1150.38 -OutputDirectory libs\webview2
+copy libs\webview2\microsoft.web.webview2.1.0.1150.38\build\native\include\*.h ext\
+
+# Build webview.dll
+cd ext
+cl /D "WEBVIEW_API=__declspec(dllexport)" /std:c++17 /EHsc webview.cc /link /DLL "/OUT:..\webview.dll"
+cd ..
+
+# Copy webview.lib to Crystal's library path for linking
+copy webview.lib (crystal env CRYSTAL_LIBRARY_PATH)
+```
+
+* At runtime, place `webview.dll` in the same directory as your executable (or in a directory on your PATH)
   
 ## Installation
 
