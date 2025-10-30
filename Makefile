@@ -24,6 +24,10 @@ ifeq ($(UNAME), Linux)
 	ar rcs ext/libwebview.a ext/webview.o
 endif
 
+ifeq ($(UNAME), Darwin)
+	ar rcs ext/libwebview.a ext/webview.o
+endif
+
 ifeq ($(findstring MINGW,$(UNAME)),MINGW)
 	ar rcs ext/libwebview.a ext/webview.o
 endif
@@ -33,4 +37,4 @@ endif
 
 .PHONY: clean
 clean:
-	rm -f $(obj_file)
+	rm -f $(obj_file) ext/libwebview.a

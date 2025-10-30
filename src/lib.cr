@@ -1,7 +1,8 @@
 module Webview
   {% if flag?(:darwin) %}
+    @[Link(framework: "Cocoa")]
     @[Link(framework: "WebKit")]
-    @[Link(ldflags: "-L#{__DIR__}/../ext -lwebview.o -lc++")]
+    @[Link(ldflags: "#{__DIR__}/../ext/libwebview.a -lc++")]
   {% elsif flag?(:linux) %}
     @[Link(ldflags: "`command -v pkg-config > /dev/null &&
       if pkg-config --exists webkit2gtk-4.1; then
