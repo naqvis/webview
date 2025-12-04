@@ -52,10 +52,19 @@ module Webview
     # Posts a function to be executed on the main thread. You normally do not need
     # to call this function, unless you want to tweak the native window.
     fun dispatch = webview_dispatch(w : T, fn : (T, Void* -> Void), arg : Void*) : Error
+    # Native handle kind
+    enum NativeHandleKind : LibC::Int
+      UI_WINDOW          = 0 # Top-level window
+      UI_WIDGET          = 1 # Browser widget
+      BROWSER_CONTROLLER = 2 # Browser controller
+    end
+
     # Returns a native window handle pointer. When using GTK backend the pointer
     # is GtkWindow pointer, when using Cocoa backend the pointer is NSWindow
     # pointer, when using Win32 backend the pointer is HWND pointer.
     fun get_window = webview_get_window(w : T) : Void*
+    # Get a native handle of choice (added in v0.11)
+    fun get_native_handle = webview_get_native_handle(w : T, kind : NativeHandleKind) : Void*
     # Updates the title of the native window. Must be called from the UI thread.
     fun set_title = webview_set_title(w : T, title : LibC::Char*) : Error
     # Updates native window size. See WEBVIEW_HINT constants.

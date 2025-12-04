@@ -1,6 +1,7 @@
 [![Linux CI](https://github.com/naqvis/webview/actions/workflows/linux.yml/badge.svg)](https://github.com/naqvis/webview/actions/workflows/linux.yml)
 [![MacOSX CI](https://github.com/naqvis/webview/actions/workflows/macos.yml/badge.svg)](https://github.com/naqvis/webview/actions/workflows/macos.yml)
 [![Windows CI](https://github.com/naqvis/webview/actions/workflows/windows.yml/badge.svg)](https://github.com/naqvis/webview/actions/workflows/windows.yml)
+
 # Crystal Webview
 
 Crystal language bindings for [zserge's Webview](https://github.com/zserge/webview) which is an excellent cross-platform single-header webview library for C/C++ using Gtk, Cocoa, or MSHTML/Edge, depending on the host OS.
@@ -11,34 +12,35 @@ This shard supports **two-way bindings** between Crystal and JavaScript. You can
 
 Webview-supported platforms and the engines you can expect to render your application content are as follows:
 
-| Operating System | Browser Engine Used |
-| ---------------- | ------------------- |
-| macOS            | Cocoa, [WebKit][webkit] |
-| Linux            | [GTK 3][gtk], [WebKitGTK][webkitgtk]|
-| Windows          | [Windows API][win32-api], [WebView2][ms-webview2]  |
+| Operating System | Browser Engine Used                               |
+| ---------------- | ------------------------------------------------- |
+| macOS            | Cocoa, [WebKit][webkit]                           |
+| Linux            | [GTK 3][gtk], [WebKitGTK][webkitgtk]              |
+| Windows          | [Windows API][win32-api], [WebView2][ms-webview2] |
 
 ## Pre-requisite
+
 If you're planning on targeting Linux or BSD you must ensure that [WebKit2GTK][webkitgtk] is already installed and available for discovery via the pkg-config command.
 
 Debian-based systems:
 
-* Packages:
-  * Development: `apt install libgtk-3-dev libwebkit2gtk-4.1-dev`
-  * Production: `apt install libgtk-3-0 libwebkit2gtk-4.1-0`
+- Packages:
+  - Development: `apt install libgtk-3-dev libwebkit2gtk-4.1-dev`
+  - Production: `apt install libgtk-3-0 libwebkit2gtk-4.1-0`
 
 BSD-based systems:
 
-* FreeBSD packages: `pkg install webkit2-gtk3`
-* Execution on BSD-based systems may require adding the `wxallowed` option (see [mount(8)](https://man.openbsd.org/mount.8))  to your fstab to bypass [W^X](https://en.wikipedia.org/wiki/W%5EX "write xor execute") memory protection for your executable. Please see if it works without disabling this security feature first.
+- FreeBSD packages: `pkg install webkit2-gtk3`
+- Execution on BSD-based systems may require adding the `wxallowed` option (see [mount(8)](https://man.openbsd.org/mount.8)) to your fstab to bypass [W^X](https://en.wikipedia.org/wiki/W%5EX "write xor execute") memory protection for your executable. Please see if it works without disabling this security feature first.
 
 Microsoft Windows:
 
-* You should have Visual C++ Build tools already as it's a pre-requisite for crystal compiler
-* `git clone https://github.com/webview/webview` to get WebView sources
-* `webview\script\build.bat` to compile them (it will download required nuget package)
-* copy `webview\dll\x64\webview.lib` to `<your crystal installation>\lib`
-* copy `webview\dll\x64\webview.dll` to directory with your program
-  
+- You should have Visual C++ Build tools already as it's a pre-requisite for crystal compiler
+- `git clone https://github.com/webview/webview` to get WebView sources
+- `webview\script\build.bat` to compile them (it will download required nuget package)
+- copy `webview\dll\x64\webview.lib` to `<your crystal installation>\lib`
+- copy `webview\dll\x64\webview.dll` to directory with your program
+
 ## Installation
 
 1. Add the dependency to your `shard.yml`:
@@ -50,6 +52,94 @@ Microsoft Windows:
    ```
 
 2. Run `shards install`
+
+## New Features
+
+### Type-Safe Bindings
+
+Use `bind_typed` for compile-time type safety and automatic JSON conversion:
+
+```crystal
+wv.bind_typed("add", Int32, Int32) do |a, b|
+  a + b  # Clean, automatic conversion!
+end
+```
+
+Instead of manual JSON handling:
+
+```crystal
+wv.bind("add", Webview::JSProc.new { |args|
+  a = args[0].as_i.to_i32  # Manual conversion
+  b = args[1].as_i.to_i32
+  JSON::Any.new(a + b)     # Manual wrapping
+})
+```
+
+### RAII Resource Management
+
+Automatic cleanup with `with_window`:
+
+```crystal
+Webview.with_window(800, 600, Webview::SizeHints::NONE, "My App") do |wv|
+  wv.html = "<h1>Hello</h1>"
+  wv.run
+end  # Automatically destroyed
+```
+
+### Lifecycle Hooks
+
+React to page events:
+
+```crystal
+wv.on_load = -> { puts "Page loaded!" }
+wv.on_navigate = ->(url : String) { puts "Navigating to #{url}" }
+```
+
+### Async/Fiber Support
+
+Non-blocking JavaScript evaluation:
+
+```crystal
+wv.eval_async("console.log('Hello')") do
+  puts "JavaScript executed"
+end
+
+# Or with channels
+channel = wv.eval_with_channel("someCode()")
+channel.receive  # Wait for completion
+```
+
+### Multi-Window Management
+
+Manage multiple windows easily:
+
+```crystal
+Webview::WindowManager.with_manager do |manager|
+  window1 = manager.create_window(800, 600, Webview::SizeHints::NONE, "Window 1")
+  window2 = manager.create_window(800, 600, Webview::SizeHints::NONE, "Window 2")
+  # All windows automatically cleaned up
+end
+```
+
+### Better Error Handling
+
+Errors now include context:
+
+```crystal
+# Errors show what operation failed
+wv.navigate("invalid://url")  # Error: "navigating to invalid://url"
+```
+
+### Native Handle Access
+
+Access platform-specific handles:
+
+```crystal
+window_handle = wv.window
+ui_widget = wv.native_handle(Webview::NativeHandleKind::UI_WIDGET)
+```
+
+See the `examples/` directory for complete working examples.
 
 ## Usage
 
@@ -105,6 +195,7 @@ wv.destroy
 ```
 
 ### Example 3: Calling Crystal code from JavaScript
+
 ```crystal
 require "webview"
 
@@ -165,7 +256,7 @@ HTML
 
 
 inject = <<-JS
-  elem = document.createElement('div');  
+  elem = document.createElement('div');
   elem.innerHTML = "hello webview %s";
   document.body.appendChild(elem);
 JS
@@ -195,6 +286,39 @@ end
 wv = Webview.window(640, 480, Webview::SizeHints::NONE, "WebView with local webapp!", "http://localhost:3000")
 wv.run
 wv.destroy
+```
+
+### Example 6: Type-Safe Bindings (New!)
+
+```crystal
+require "webview"
+
+html = <<-HTML
+<!DOCTYPE html>
+<html>
+<body>
+  <button onclick="testAdd()">Test Add</button>
+  <div id="result"></div>
+  <script>
+    async function testAdd() {
+      const result = await add(5, 3);
+      document.getElementById('result').textContent = 'Result: ' + result;
+    }
+  </script>
+</body>
+</html>
+HTML
+
+Webview.with_window(640, 480, Webview::SizeHints::NONE, "Type-Safe Demo") do |wv|
+  wv.html = html
+
+  # Type-safe binding - automatic conversion!
+  wv.bind_typed("add", Int32, Int32) do |a, b|
+    a + b
+  end
+
+  wv.run
+end  # Automatically destroyed
 ```
 
 ## App Distribution
@@ -237,6 +361,7 @@ my-project/
 ```
 
 `resources.rc`:
+
 ```
 100 ICON "icons\\application.ico"
 32512 ICON "icons\\window.ico"
@@ -251,6 +376,7 @@ my-project/
 Since a browser engine is not a full web browser it may not support every feature you may expect from a browser. If you find that a feature does not work as expected then please consult with the browser engine's documentation and [open an issue on webview library][issues-new] if you think that the library should support it.
 
 For example, the `webview` library does not attempt to support user interaction features like `alert()`, `confirm()` and `prompt()` and other non-essential features like `console.log()`.
+
 ## Contributing
 
 1. Fork it (<https://github.com/naqvis/webview/fork>)
@@ -263,14 +389,13 @@ For example, the `webview` library does not attempt to support user interaction 
 
 - [Ali Naqvi](https://github.com/naqvis) - creator and maintainer
 
-
-[macos-app-bundle]:  https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
-[gtk]:               https://docs.gtk.org/gtk3/
-[issues-new]:        https://github.com/webview/webview/issues/new
-[webkit]:            https://webkit.org/
-[webkitgtk]:         https://webkitgtk.org/
-[ms-webview2]:       https://developer.microsoft.com/en-us/microsoft-edge/webview2/
-[ms-webview2-sdk]:   https://www.nuget.org/packages/Microsoft.Web.WebView2
-[ms-webview2-rt]:    https://developer.microsoft.com/en-us/microsoft-edge/webview2/
-[win32-api]:         https://docs.microsoft.com/en-us/windows/win32/apiindex/windows-api-list
-[win32-rc]:          https://docs.microsoft.com/en-us/windows/win32/menurc/resource-compiler
+[macos-app-bundle]: https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html
+[gtk]: https://docs.gtk.org/gtk3/
+[issues-new]: https://github.com/webview/webview/issues/new
+[webkit]: https://webkit.org/
+[webkitgtk]: https://webkitgtk.org/
+[ms-webview2]: https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+[ms-webview2-sdk]: https://www.nuget.org/packages/Microsoft.Web.WebView2
+[ms-webview2-rt]: https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+[win32-api]: https://docs.microsoft.com/en-us/windows/win32/apiindex/windows-api-list
+[win32-rc]: https://docs.microsoft.com/en-us/windows/win32/menurc/resource-compiler
