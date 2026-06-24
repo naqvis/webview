@@ -51,7 +51,9 @@ module Webview
     private record BindContext, w : LibWebView::T, cb : JSProc
 
     @@dispatchs = Hash(Proc(Nil), Pointer(Void)?).new
+    @@dispatchs_lock = Mutex.new
     @@bindings = Hash(JSProc, Pointer(Void)?).new
+    @@bindings_lock = Mutex.new
 
     # Lifecycle event callbacks
     property on_load : Proc(Nil)?
@@ -142,12 +144,12 @@ module Webview
     # to call this function, unless you want to tweak the native window.
     def dispatch(&f : ->)
       boxed = Box.box(f)
-      @@dispatchs[f] = boxed
+      @@dispatchs_lock.synchronize { @@dispatchs[f] = boxed }
 
       check_error(LibWebView.dispatch(@w, ->(_w, data) {
         cb = Box(typeof(f)).unbox(data)
         cb.call
-        @@dispatchs.delete(cb)
+        @@dispatchs_lock.synchronize { @@dispatchs.delete(cb) }
       }, boxed))
     end
 
@@ -188,7 +190,7 @@ module Webview
     def bind(name : String, fn : JSProc)
       ctx = BindContext.new(@w, fn)
       boxed = Box.box(ctx)
-      @@bindings[fn] = boxed
+      @@bindings_lock.synchronize { @@bindings[fn] = boxed }
 
       check_error(LibWebView.bind(@w, name, ->(id, req, data) {
         raw = JSON.parse(String.new(req))
@@ -201,7 +203,7 @@ module Webview
     # Removes a native Crystal callback that was previously set by `bind`.
     def unbind(name : String)
       check_error(LibWebView.unbind(@w, name))
-      @@bindings.delete(name)
+      @@bindings_lock.synchronize { @@bindings.delete(name) }
     end
 
     # Type-safe binding for 1 parameter
